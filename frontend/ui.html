@@ -1,0 +1,841 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Object Storage</title>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg: #0a0a0a;
+            --surface: #1a1a1a;
+            --border: #2a2a2a;
+            --accent: #00ff88;
+            --text: #e0e0e0;
+            --text-dim: #888;
+            --danger: #ff3366;
+            --warning: #ffaa00;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'JetBrains Mono', monospace;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.6;
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        header {
+            border-bottom: 2px solid var(--accent);
+            padding-bottom: 2rem;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        h1 {
+            font-family: 'Space Mono', monospace;
+            font-size: 3rem;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            margin-bottom: 0.5rem;
+            animation: slideDown 0.6s ease-out;
+        }
+
+        .subtitle {
+            color: var(--text-dim);
+            font-size: 0.9rem;
+            animation: slideDown 0.6s ease-out 0.1s both;
+        }
+
+        .status-indicator {
+            position: absolute;
+            top: 0;
+            right: 0;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 0.8rem;
+            animation: slideDown 0.6s ease-out 0.2s both;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--accent);
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .card {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            margin-bottom: 2rem;
+            transition: border-color 0.3s;
+            animation: slideUp 0.6s ease-out both;
+        }
+
+        .card:nth-child(1) { animation-delay: 0.1s; }
+        .card:nth-child(2) { animation-delay: 0.2s; }
+        .card:nth-child(3) { animation-delay: 0.3s; }
+
+        .card:hover {
+            border-color: var(--accent);
+        }
+
+        .card-title {
+            font-family: 'Space Mono', monospace;
+            font-size: 1.2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .card-title::before {
+            content: '▸';
+            font-size: 1.5rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-size: 0.85rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        input[type="text"],
+        input[type="file"] {
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            color: var(--text);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        input[type="text"]:focus,
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(0, 255, 136, 0.1);
+        }
+
+        input[type="file"] {
+            padding: 0.5rem;
+            cursor: pointer;
+        }
+
+        button {
+            background: var(--accent);
+            color: var(--bg);
+            border: none;
+            padding: 0.75rem 2rem;
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 0.9rem;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+
+        button:hover {
+            background: var(--text);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 255, 136, 0.3);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        button:disabled {
+            background: var(--border);
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text);
+        }
+
+        .btn-secondary:hover {
+            background: var(--surface);
+            border-color: var(--text);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+        }
+
+        .btn-danger:hover {
+            background: #cc0044;
+            box-shadow: 0 4px 12px rgba(255, 51, 102, 0.3);
+        }
+
+        .message {
+            padding: 1rem;
+            margin-bottom: 1rem;
+            border-left: 3px solid var(--accent);
+            background: rgba(0, 255, 136, 0.05);
+            animation: slideUp 0.3s ease-out;
+        }
+
+        .message.error {
+            border-left-color: var(--danger);
+            background: rgba(255, 51, 102, 0.05);
+        }
+
+        .message code {
+            background: var(--bg);
+            padding: 0.2rem 0.4rem;
+            border-radius: 2px;
+            font-size: 0.85rem;
+        }
+
+        .objects-list {
+            margin-top: 1rem;
+        }
+
+        .object-item {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s;
+        }
+
+        .object-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .object-info {
+            flex: 1;
+        }
+
+        .object-key {
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .object-meta {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .object-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.5rem;
+            font-size: 0.8rem;
+            min-width: 40px;
+        }
+
+        .icon-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .loading {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border: 2px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .stat-card {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-family: 'Space Mono', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+            text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-dim);
+        }
+
+        .empty-state::before {
+            content: '□';
+            display: block;
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.3;
+        }
+
+        .browser-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .refresh-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            padding: 0.5rem 1rem;
+            font-size: 0.8rem;
+        }
+
+        .refresh-btn:hover {
+            border-color: var(--accent);
+            background: rgba(0, 255, 136, 0.1);
+        }
+
+        .bucket-group {
+            margin-bottom: 2rem;
+        }
+
+        .bucket-header {
+            background: var(--bg);
+            padding: 1rem;
+            border-left: 3px solid var(--accent);
+            margin-bottom: 0.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .bucket-name {
+            font-family: 'Space Mono', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+        }
+
+        .bucket-count {
+            font-size: 0.8rem;
+            color: var(--text-dim);
+        }
+
+        .file-item {
+            background: var(--surface);
+            border: 1px solid var(--border);
+            padding: 0.75rem 1rem;
+            margin-bottom: 0.25rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.2s;
+        }
+
+        .file-item:hover {
+            border-color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        .file-name {
+            font-size: 0.9rem;
+            flex: 1;
+        }
+
+        .file-meta {
+            font-size: 0.75rem;
+            color: var(--text-dim);
+            margin-right: 1rem;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 0.25rem;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 0.5rem;
+            margin-bottom: 1.5rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .tab {
+            background: transparent;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            font-size: 0.9rem;
+            color: var(--text-dim);
+            cursor: pointer;
+            border-bottom: 2px solid transparent;
+            transition: all 0.3s;
+        }
+
+        .tab:hover {
+            color: var(--text);
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        .tab.active {
+            color: var(--accent);
+            border-bottom-color: var(--accent);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>OBJECT STORE</h1>
+            <p class="subtitle">Content-addressable storage system</p>
+            <div class="status-indicator">
+                <span class="status-dot"></span>
+                <span id="status">CONNECTED</span>
+            </div>
+        </header>
+
+        <main>
+            <div class="card">
+                <div class="tabs">
+                    <button class="tab active" data-tab="upload">Upload</button>
+                    <button class="tab" data-tab="retrieve">Retrieve</button>
+                    <button class="tab" data-tab="browser">Browser</button>
+                </div>
+
+                <div id="upload" class="tab-content active">
+                    <h2 class="card-title">Upload Object</h2>
+                    <div id="uploadMessage"></div>
+                    <form id="uploadForm">
+                        <div class="form-group">
+                            <label for="bucket">Bucket Name</label>
+                            <input type="text" id="bucket" name="bucket" placeholder="my-bucket" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="key">Object Key</label>
+                            <input type="text" id="key" name="key" placeholder="path/to/object.txt" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="file">File</label>
+                            <input type="file" id="file" name="file" required>
+                        </div>
+                        <button type="submit" id="uploadBtn">
+                            <span id="uploadBtnText">UPLOAD</span>
+                        </button>
+                    </form>
+                </div>
+
+                <div id="retrieve" class="tab-content">
+                    <h2 class="card-title">Retrieve Object</h2>
+                    <div id="getMessage"></div>
+                    <form id="getForm">
+                        <div class="form-group">
+                            <label for="getBucket">Bucket Name</label>
+                            <input type="text" id="getBucket" name="bucket" placeholder="my-bucket" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="getKey">Object Key</label>
+                            <input type="text" id="getKey" name="key" placeholder="path/to/object.txt" required>
+                        </div>
+                        <div class="button-group">
+                            <button type="submit" id="getBtn">
+                                <span id="getBtnText">DOWNLOAD</span>
+                            </button>
+                            <button type="button" class="btn-secondary" id="headBtn">INFO</button>
+                        </div>
+                    </form>
+                </div>
+
+                <div id="browser" class="tab-content">
+                    <h2 class="card-title">Object Browser</h2>
+                    <div class="browser-header">
+                        <div id="browserStats" class="object-meta">Loading...</div>
+                        <button class="refresh-btn" id="refreshBtn">↻ REFRESH</button>
+                    </div>
+                    <div id="objectsList"></div>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2 class="card-title">Recent Operations</h2>
+                <div id="recentOps" class="empty-state">
+                    No operations yet
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        const API_URL = 'http://localhost:8080';
+        const recentOps = [];
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                const tabName = tab.dataset.tab;
+                
+                // Update active tab
+                document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+                tab.classList.add('active');
+                
+                // Update active content
+                document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+                document.getElementById(tabName).classList.add('active');
+
+                // Load browser data when browser tab is clicked
+                if (tabName === 'browser') {
+                    loadObjects();
+                }
+            });
+        });
+
+        function addOperation(type, bucket, key, result) {
+            const op = {
+                type,
+                bucket,
+                key,
+                result,
+                timestamp: new Date().toLocaleTimeString()
+            };
+            recentOps.unshift(op);
+            if (recentOps.length > 5) recentOps.pop();
+            updateRecentOps();
+        }
+
+        function updateRecentOps() {
+            const container = document.getElementById('recentOps');
+            if (recentOps.length === 0) {
+                container.innerHTML = '<div class="empty-state">No operations yet</div>';
+                return;
+            }
+
+            container.innerHTML = '<div class="objects-list">' + 
+                recentOps.map(op => `
+                    <div class="object-item">
+                        <div class="object-info">
+                            <div class="object-key">${op.type.toUpperCase()} → ${op.bucket}/${op.key}</div>
+                            <div class="object-meta">${op.timestamp} • ${op.result}</div>
+                        </div>
+                    </div>
+                `).join('') + 
+            '</div>';
+        }
+
+        function showMessage(elementId, message, isError = false) {
+            const el = document.getElementById(elementId);
+            el.innerHTML = `<div class="message ${isError ? 'error' : ''}">${message}</div>`;
+            setTimeout(() => el.innerHTML = '', 5000);
+        }
+
+        function formatBytes(bytes) {
+            if (bytes < 1024) return bytes + ' B';
+            if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(2) + ' KB';
+            return (bytes / (1024 * 1024)).toFixed(2) + ' MB';
+        }
+
+        async function loadObjects() {
+            const container = document.getElementById('objectsList');
+            const stats = document.getElementById('browserStats');
+            
+            try {
+                const response = await fetch(`${API_URL}/objects`);
+                if (!response.ok) throw new Error('Failed to load objects');
+                
+                let objects = await response.json();
+                
+                // Normalize keys (Go returns capitalized keys)
+                objects = objects.map(obj => ({
+                    bucket: obj.Bucket || obj.bucket,
+                    key: obj.Key || obj.key,
+                    hash: obj.Hash || obj.hash,
+                    size: obj.Size || obj.size
+                }));
+                
+                if (!objects || objects.length === 0) {
+                    container.innerHTML = '<div class="empty-state">No objects stored yet</div>';
+                    stats.textContent = 'No objects';
+                    return;
+                }
+
+                // Group by bucket
+                const buckets = {};
+                objects.forEach(obj => {
+                    if (!buckets[obj.bucket]) {
+                        buckets[obj.bucket] = [];
+                    }
+                    buckets[obj.bucket].push(obj);
+                });
+
+                // Update stats
+                const totalSize = objects.reduce((sum, obj) => sum + obj.size, 0);
+                stats.textContent = `${objects.length} objects • ${Object.keys(buckets).length} buckets • ${formatBytes(totalSize)}`;
+
+                // Render buckets and files
+                container.innerHTML = Object.keys(buckets).sort().map(bucket => `
+                    <div class="bucket-group">
+                        <div class="bucket-header">
+                            <div class="bucket-name">${bucket}</div>
+                            <div class="bucket-count">${buckets[bucket].length} objects</div>
+                        </div>
+                        ${buckets[bucket].map(obj => `
+                            <div class="file-item">
+                                <div class="file-name">${obj.key}</div>
+                                <div class="file-meta">${formatBytes(obj.size || 0)} • ${obj.hash ? obj.hash.substring(0, 8) + '...' : 'no hash'}</div>
+                                <div class="file-actions">
+                                    <button class="icon-btn" onclick="downloadObject('${obj.bucket}', '${obj.key}')" title="Download">↓</button>
+                                    <button class="icon-btn btn-danger" onclick="deleteObjectConfirm('${obj.bucket}', '${obj.key}')" title="Delete">✕</button>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                `).join('');
+
+            } catch (error) {
+                container.innerHTML = `<div class="message error">✗ Error loading objects: ${error.message}</div>`;
+                stats.textContent = 'Error';
+            }
+        }
+
+        async function downloadObject(bucket, key) {
+            try {
+                const response = await fetch(`${API_URL}/buckets/${bucket}/objects/${key}`);
+                if (!response.ok) throw new Error('Download failed');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = key.split('/').pop() || 'download';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+
+                addOperation('GET', bucket, key, `${formatBytes(blob.size)}`);
+            } catch (error) {
+                alert(`Download failed: ${error.message}`);
+            }
+        }
+
+        async function deleteObjectConfirm(bucket, key) {
+            if (!confirm(`Delete ${bucket}/${key}?`)) return;
+
+            try {
+                const response = await fetch(`${API_URL}/buckets/${bucket}/objects/${key}`, {
+                    method: 'DELETE'
+                });
+                
+                if (!response.ok) throw new Error('Delete failed');
+
+                addOperation('DELETE', bucket, key, 'SUCCESS');
+                loadObjects(); // Reload the list
+            } catch (error) {
+                alert(`Delete failed: ${error.message}`);
+                addOperation('DELETE', bucket, key, 'FAILED');
+            }
+        }
+
+        document.getElementById('refreshBtn').addEventListener('click', loadObjects);
+
+        document.getElementById('uploadForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bucket = document.getElementById('bucket').value;
+            const key = document.getElementById('key').value;
+            const file = document.getElementById('file').files[0];
+            
+            const btn = document.getElementById('uploadBtn');
+            const btnText = document.getElementById('uploadBtnText');
+            
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span> UPLOADING...';
+
+            try {
+                const response = await fetch(`${API_URL}/buckets/${bucket}/objects/${key}`, {
+                    method: 'PUT',
+                    body: file
+                });
+
+                if (!response.ok) throw new Error('Upload failed');
+
+                const data = await response.json();
+                showMessage('uploadMessage', `✓ Success! ETag: <code>${data.etag}</code>`);
+                addOperation('PUT', bucket, key, `ETag: ${data.etag.substring(0, 12)}...`);
+                
+                document.getElementById('uploadForm').reset();
+            } catch (error) {
+                showMessage('uploadMessage', `✗ Error: ${error.message}`, true);
+                addOperation('PUT', bucket, key, 'FAILED');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'UPLOAD';
+            }
+        });
+
+        document.getElementById('getForm').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const bucket = document.getElementById('getBucket').value;
+            const key = document.getElementById('getKey').value;
+            
+            const btn = document.getElementById('getBtn');
+            const btnText = document.getElementById('getBtnText');
+            
+            btn.disabled = true;
+            btnText.innerHTML = '<span class="loading"></span> DOWNLOADING...';
+
+            try {
+                const response = await fetch(`${API_URL}/buckets/${bucket}/objects/${key}`);
+                
+                if (!response.ok) throw new Error('Object not found');
+
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = key.split('/').pop() || 'download';
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+
+                showMessage('getMessage', `✓ Downloaded successfully`);
+                addOperation('GET', bucket, key, `${(blob.size / 1024).toFixed(2)} KB`);
+            } catch (error) {
+                showMessage('getMessage', `✗ Error: ${error.message}`, true);
+                addOperation('GET', bucket, key, 'FAILED');
+            } finally {
+                btn.disabled = false;
+                btnText.textContent = 'DOWNLOAD';
+            }
+        });
+
+        document.getElementById('headBtn').addEventListener('click', async () => {
+            const bucket = document.getElementById('getBucket').value;
+            const key = document.getElementById('getKey').value;
+            
+            if (!bucket || !key) {
+                showMessage('getMessage', '✗ Please fill in bucket and key', true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/buckets/${bucket}/objects/${key}`, {
+                    method: 'HEAD'
+                });
+                
+                if (!response.ok) throw new Error('Object not found');
+
+                const size = response.headers.get('Content-Length');
+                const etag = response.headers.get('ETag');
+                
+                showMessage('getMessage', 
+                    `✓ Object exists<br>Size: <code>${size ? (size / 1024).toFixed(2) + ' KB' : 'Unknown'}</code><br>ETag: <code>${etag || 'Unknown'}</code>`
+                );
+                addOperation('HEAD', bucket, key, `${size ? (size / 1024).toFixed(2) + ' KB' : 'N/A'}`);
+            } catch (error) {
+                showMessage('getMessage', `✗ Error: ${error.message}`, true);
+                addOperation('HEAD', bucket, key, 'FAILED');
+            }
+        });
+
+        // Check server status on load
+        fetch(API_URL)
+            .then(() => {
+                document.getElementById('status').textContent = 'CONNECTED';
+            })
+            .catch(() => {
+                document.getElementById('status').textContent = 'OFFLINE';
+                document.querySelector('.status-dot').style.background = 'var(--danger)';
+            });
+    </script>
+</body>
+</html>
