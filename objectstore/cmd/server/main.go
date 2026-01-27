@@ -60,11 +60,11 @@ func main() {
 	// 	nodeID = "node-1"
 	// }
 
-	log.Printf("===========================================")
+	log.Printf("--------------------------------------------")
 	log.Printf("Node ID: %s", nodeID)
 	log.Printf("Data Directory: %s", storage.DataDir)
 	log.Printf("Server starting on port %s", port)
-	log.Printf("===========================================")
+	log.Printf("--------------------------------------------")
 	log.Println("Routes:")
 	log.Println("  PUT    /buckets/{bucket}/objects/{key}")
 	log.Println("  GET    /buckets/{bucket}/objects/{key}")
