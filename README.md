@@ -251,39 +251,6 @@ S3_BUCKET_NAME=your-bucket
 
 ---
 
-## 🧪 Testing
-
-### Manual Testing
-```bash
-# Upload
-curl -X PUT http://localhost:8080/buckets/test/objects/file.txt \
-  --data "test data"
-
-# Verify in S3
-aws s3 ls s3://your-bucket-name/objects/ --recursive
-
-# Verify in PostgreSQL
-psql $DATABASE_URL -c "SELECT * FROM objects;"
-
-# Download
-curl http://localhost:8080/buckets/test/objects/file.txt
-```
-
-### Test Deduplication
-```bash
-# Upload same file twice with different keys
-curl -X PUT http://localhost:8080/buckets/test/objects/file1.txt \
-  --data "same content"
-
-curl -X PUT http://localhost:8080/buckets/test/objects/file2.txt \
-  --data "same content"
-
-# Check S3 - only ONE object stored (same hash!)
-aws s3 ls s3://your-bucket-name/objects/ --recursive
-```
-
----
-
 ## 🔍 How It Works
 
 ### Upload Flow
@@ -311,7 +278,7 @@ aws s3 ls s3://your-bucket-name/objects/ --recursive
 
 ---
 
-## 🎓 What This Project Demonstrates
+## What This Project Demonstrates
 
 ### Distributed Systems Concepts
 
@@ -372,36 +339,6 @@ I built this project for learning purpose, not production-ready. Missing feature
 
 ---
 
-## 📊 Comparison with Real Systems
-
-### AWS S3 vs This Project
-
-| Feature | AWS S3 | This Project |
-|---------|--------|--------------|
-| Storage | Distributed across data centers | Single S3 bucket |
-| Metadata | DynamoDB (distributed) | PostgreSQL (single instance) |
-| Consistency | Strong consistency | Strong consistency |
-| Durability | 99.999999999% (11 nines) | Depends on S3 |
-| Availability | 99.99% | Depends on Railway/S3 |
-| Scale | Exabytes | Limited by PostgreSQL |
-| Cost | Pay-per-use | Fixed + S3 costs |
-| Authentication | IAM, policies | None |
-| Encryption | At-rest, in-transit | Basic (S3 only) |
-
-### What's Similar?
-- Content-addressable storage pattern
-- Stateless API layer
-- Metadata + blob separation
-- RESTful API design
-
-### What's Different?
-- Production S3 uses distributed databases (DynamoDB)
-- Real S3 has multi-region replication
-- AWS has sophisticated access control
-- Production systems have extensive monitoring
-
----
-
 ## Contributing
 
 This is an educational project. Feel free to:
@@ -434,6 +371,7 @@ MIT License - Use for learning, not production!
 ---
 
 **Built with ❤️ for learning distributed systems and system design**
+
 
 
 
