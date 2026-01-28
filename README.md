@@ -8,21 +8,12 @@ A simplified, educational implementation of a distributed object storage system 
 
 This project implements a **stateless, horizontally-scalable object storage system** with the following architecture:
 
-```
-## 🖥️ Demo
-
-### UI Interface
-![UI Demo](./docs/ui-demo.png)
-
-### Upload Flow
-![Upload Demo](./docs/upload-demo.gif)
-```
 ### Architecture Diagram
 ![Detailed Architecture](docs/architecture.png)
 
 
 ### Key Features
-
+---
 **Content-Addressable Storage** - Objects stored by SHA256 hash for automatic deduplication
 **Horizontal Scalability** - Add unlimited backend nodes without coordination
 **Stateless Architecture** - Backends can restart/die without data loss
@@ -443,6 +434,7 @@ MIT License - Use for learning, not production!
 ---
 
 **Built with ❤️ for learning distributed systems and system design**
+
 
 
 
