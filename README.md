@@ -9,14 +9,16 @@ A simplified, educational implementation of a distributed object storage system 
 This project implements a **stateless, horizontally-scalable object storage system** with the following architecture:
 
 ```
-Load Balancer
-    ↓
-├→ Backend Node 1 (Go) ┐
-├→ Backend Node 2 (Go) ├─ Stateless, identical instances
-└→ Backend Node 3 (Go) ┘
-    ↓
-    ├→ PostgreSQL (metadata storage)
-    └→ AWS S3 (object storage)
+## 🖥️ Demo
+
+### UI Interface
+![UI Demo](./docs/ui-demo.png)
+
+### Upload Flow
+![Upload Demo](./docs/upload-demo.gif)
+
+### Architecture Diagram
+![Detailed Architecture](./docs/architecture.png)
 ```
 
 ### Key Features
@@ -544,3 +546,4 @@ MIT License - Use for learning, not production!
 ---
 
 **Built with ❤️ for learning distributed systems**
+
