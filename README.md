@@ -18,7 +18,7 @@ This project implements a **stateless, horizontally-scalable object storage syst
 ![Upload Demo](./docs/upload-demo.gif)
 
 ### Architecture Diagram
-![Detailed Architecture](./docs/architecture.png)
+![Detailed Architecture](docs/architecture.png)
 ```
 
 ### Key Features
@@ -546,4 +546,5 @@ MIT License - Use for learning, not production!
 ---
 
 **Built with ❤️ for learning distributed systems**
+
 
