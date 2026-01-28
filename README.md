@@ -342,88 +342,42 @@ Many production systems (Dropbox, GitHub, etc.) use similar patterns!
 
 ---
 
-## ⚠️ Current Limitations
+## Current Limitations
 
-### What's Missing (Intentionally)
+### What's Missing (Intentionally) + Improvements
 
-This is an **educational project**, not production-ready. Missing features:
+I built this project for learning purpose, not production-ready. Missing features + Improvements:
 
 #### Security
-- ❌ **No authentication** - Anyone can upload/download
-- ❌ **No authorization** - No access control
-- ❌ **No encryption** - Data not encrypted at rest/transit (except S3's encryption)
-- ❌ **No API keys** - No rate limiting
+- No authentication → Add JWT authentication
+- No authorization → Add bucket-level permissions
+- No encryption → Enable S3 server-side encryption / HTTPS/TLS
+- No API keys → Implement API key system
 
 #### Reliability
-- ❌ **No retry logic** - S3/DB failures not handled gracefully
-- ❌ **No circuit breakers** - Cascading failures possible
-- ❌ **Limited error handling** - Some edge cases unhandled
-- ❌ **No health checks** - Load balancer doesn't detect unhealthy nodes
+- No retry logic → Implement retry with exponential backoff
+- No circuit breakers → Add circuit breakers (go-resilience)
+- Limited error handling → Comprehensive error handling
+- No health checks → Health check endpoint for load balancer
 
 #### Features
-- ❌ **No versioning** - Overwrites replace objects
-- ❌ **No multipart uploads** - Large files not chunked
-- ❌ **No range requests** - Can't download partial files
-- ❌ **No compression** - Files stored as-is
-- ❌ **No metadata search** - Basic filtering only
+- No versioning → Object versioning
+- No multipart uploads → Multipart upload support
+- No range requests → Range requests (partial downloads)
+- No compression → Compression support
+- No metadata search → Pre-signed URLs / Bucket lifecycle policies (optional)
 
 #### Observability
-- ❌ **No metrics** - No Prometheus/Grafana
-- ❌ **Basic logging** - No structured logging
-- ❌ **No tracing** - Can't track requests across services
-- ❌ **No alerting** - No monitoring/alerts
+- No metrics → Prometheus metrics
+- Basic logging → Structured logging (zap/zerolog)
+- No tracing → OpenTelemetry tracing
+- No alerting → PagerDuty alerts / monitoring
 
 #### Performance
-- ❌ **No caching** - No Redis for hot objects
-- ❌ **No CDN** - No CloudFront for edge caching
-- ❌ **No connection pooling** - Basic DB connections
-- ❌ **No async processing** - All operations synchronous
-
----
-
-## 🚀 Future Improvements
-
-### Phase 1: Security (Critical)
-- [ ] Add JWT authentication
-- [ ] Implement API key system
-- [ ] Add bucket-level permissions
-- [ ] Enable S3 server-side encryption
-- [ ] Add HTTPS/TLS
-
-### Phase 2: Reliability
-- [ ] Implement retry with exponential backoff
-- [ ] Add circuit breakers (go-resilience)
-- [ ] Comprehensive error handling
-- [ ] Health check endpoint for load balancer
-- [ ] Graceful shutdown
-
-### Phase 3: Features
-- [ ] Object versioning
-- [ ] Multipart upload support
-- [ ] Range requests (partial downloads)
-- [ ] Pre-signed URLs for temporary access
-- [ ] Bucket lifecycle policies
-
-### Phase 4: Performance
-- [ ] Redis caching layer
-- [ ] CloudFront CDN integration
-- [ ] Database connection pooling (pgBouncer)
-- [ ] Async upload processing
-- [ ] Compression support
-
-### Phase 5: Observability
-- [ ] Prometheus metrics
-- [ ] Grafana dashboards
-- [ ] Structured logging (zap/zerolog)
-- [ ] OpenTelemetry tracing
-- [ ] PagerDuty alerts
-
-### Phase 6: Advanced Features
-- [ ] Multi-region replication
-- [ ] Disaster recovery
-- [ ] Data migration tools
-- [ ] Admin dashboard
-- [ ] Usage analytics
+- No caching → Redis/In-mem caching layers
+- No CDN → CloudFront CDN integration
+- No connection pooling → Database connection pooling
+- No async processing → Add queue/background worker to allow async upload/delete processing
 
 ---
 
@@ -457,39 +411,7 @@ This is an **educational project**, not production-ready. Missing features:
 
 ---
 
-## 🧠 Learning Outcomes
-
-After building/studying this project, you'll understand:
-
-1. **Stateless vs Stateful Architecture**
-   - Why stateless backends scale better
-   - When to use shared vs distributed storage
-
-2. **Content-Addressable Storage**
-   - How Git, S3, IPFS use content hashing
-   - Benefits of deduplication
-
-3. **Horizontal Scaling**
-   - How to design systems that scale by adding nodes
-   - Load balancing strategies
-
-4. **Cloud-Native Patterns**
-   - Separation of compute and storage
-   - Using managed services (S3, PostgreSQL)
-
-5. **API Design**
-   - RESTful conventions
-   - CORS handling
-   - Error responses
-
-6. **Database Design**
-   - Indexing strategies
-   - Connection management
-   - Schema design
-
----
-
-## 🤝 Contributing
+## Contributing
 
 This is an educational project. Feel free to:
 - Fork and experiment
@@ -501,18 +423,11 @@ This is an educational project. Feel free to:
 
 ---
 
-## 📝 License
+## License
 
 MIT License - Use for learning, not production!
 
 ---
-
-## 🙏 Acknowledgments
-
-### Inspiration
-- AWS S3 architecture
-- Git's content-addressable storage
-- Dropbox's block storage design
 
 ### Technologies Used
 - [Go](https://golang.org/) - Backend language
@@ -520,32 +435,15 @@ MIT License - Use for learning, not production!
 - [AWS S3](https://aws.amazon.com/s3/) - Object storage
 - [Railway](https://railway.app/) - Deployment platform
 
-### Learning Resources
-- [Designing Data-Intensive Applications](https://dataintensive.net/) by Martin Kleppmann
-- [System Design Primer](https://github.com/donnemartin/system-design-primer)
-- AWS S3 documentation
-
----
-
-## 📧 Contact
-
-**Author:** Your Name  
-**GitHub:** [@yourusername](https://github.com/yourusername)  
-**LinkedIn:** [Your LinkedIn](https://linkedin.com/in/yourprofile)  
-**Portfolio:** [yourwebsite.com](https://yourwebsite.com)
-
----
 
 ## ⭐ If You Found This Helpful
 
 - Star the repository
 - Share with others learning distributed systems
-- Connect on LinkedIn
-- Check out my other projects
-
 ---
 
-**Built with ❤️ for learning distributed systems**
+**Built with ❤️ for learning distributed systems and system design**
+
 
 
 
